@@ -1,0 +1,9 @@
+1.配置SchedulingConfigurer，设置scheduledExecutor线程池，解决@Scheduled无法执行问题
+2.设置myAsyncExecutor异步线程线程池，解决@Async无法执行问题
+3.使用的springboot监听器ApplicationListener<ContextRefreshedEvent>的onApplicationEvent方法，处理系统初始化任务
+4.设置LinkedBlockingQueue阻塞队列，结合put(),take()处理异步任务
+5.使用ThreadLocal，结合set(),get(),remove()，存储和销毁各线程变量
+6.使用Filter的doFilter处理请求校验，和接口前置公共处理
+7.使用阿里nacos配置中心，实现热部署和负载均衡
+8.使用skywalking实现分布式链路追踪，提升问题定位效率
+9.使用nio工具类FileChannel结合ByteBuffer，实现海量数据高效导出
