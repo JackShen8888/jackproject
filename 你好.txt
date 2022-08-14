@@ -1,9 +1,40 @@
-1.配置SchedulingConfigurer，设置scheduledExecutor线程池，解决@Scheduled无法执行问题
-2.设置myAsyncExecutor异步线程线程池，解决@Async无法执行问题
-3.使用的springboot监听器ApplicationListener<ContextRefreshedEvent>的onApplicationEvent方法，处理系统初始化任务
-4.设置LinkedBlockingQueue阻塞队列，结合put(),take()处理异步任务
-5.使用ThreadLocal，结合set(),get(),remove()，存储和销毁各线程变量
-6.使用Filter的doFilter处理请求校验，和接口前置公共处理
-7.使用阿里nacos配置中心，实现热部署和负载均衡
-8.使用skywalking实现分布式链路追踪，提升问题定位效率
-9.使用nio工具类FileChannel结合ByteBuffer，实现海量数据高效导出
+
+
+    public  String getMd5SignStr(Map<String, Object> params) {
+
+        String[] sortedKeys = params.keySet().toArray(new String[]{}); //将key取出放数组
+        Arrays.sort(sortedKeys);// 排序请求参数
+        StringBuilder s2 = new StringBuilder();
+        for (String key : sortedKeys) {
+            s2.append(key).append(params.get(key));   //name123sssssdf
+        }
+        if (s2.toString().trim().length() == 0) {
+            return "";
+        }
+        return s2.toString();
+    }
+
+
+    @Test
+    public void test() throws IOException, ParseException {
+        String secret_key = "9cc743e57a539296a587a50dedbd2ffb";
+        Map map = new HashMap();
+        //赋值
+        VhallCommonParam vhallCommonParam = new VhallCommonParam();
+        vhallCommonParam.app_key = "3607c5f95326a420faf2f85667479f73";
+        vhallCommonParam.sign_type = "0";
+        vhallCommonParam.signed_at = new Date().getTime()+"";
+        vhallCommonParam.third_user_id = "1233432456";
+        vhallCommonParam.pass = "123456";
+        map.put("app_key",vhallCommonParam.app_key);
+        map.put("sign_type",vhallCommonParam.sign_type);
+        map.put("signed_at",vhallCommonParam.signed_at);
+        map.put("third_user_id",vhallCommonParam.third_user_id);
+        map.put("pass",vhallCommonParam.pass);
+        String signStr =  getMd5SignStr(map);
+        System.out.println(secret_key +signStr  + secret_key);
+        map.put("sign", MD5Util.MD5(secret_key +signStr  + secret_key).toLowerCase());
+
+        String s = SimpleHttpClientUtil.send("https://saas-open.vhall.com/v3/users/open-user/create", map);
+        System.out.println(111);
+    }
