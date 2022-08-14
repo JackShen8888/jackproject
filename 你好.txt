@@ -1,40 +1,75 @@
 
 
-    public  String getMd5SignStr(Map<String, Object> params) {
+    import cn.hutool.http.HttpUtil;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 
-        String[] sortedKeys = params.keySet().toArray(new String[]{}); //将key取出放数组
-        Arrays.sort(sortedKeys);// 排序请求参数
-        StringBuilder s2 = new StringBuilder();
-        for (String key : sortedKeys) {
-            s2.append(key).append(params.get(key));   //name123sssssdf
+import java.io.IOException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+/**
+     * 模拟请求    post 请求
+     *
+     * @param url 资源地址
+     * @param map 参数列表
+     * @return
+     * @throws ParseException
+     * @throws IOException
+     */
+    public static String send(String url, Map<String, String> map) throws IOException {
+        String body = "";
+
+        //创建httpclient对象
+        CloseableHttpClient client = HttpClients.createDefault();
+        //创建post方式请求对象
+        HttpPost httpPost = new HttpPost(url);
+
+        //装填参数
+        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        if (map != null) {
+            for (Map.Entry<String, String> entry : map.entrySet()) {
+                nvps.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
+            }
         }
-        if (s2.toString().trim().length() == 0) {
-            return "";
+        //设置参数到请求对象中
+        httpPost.setEntity(new UrlEncodedFormEntity(nvps, "utf-8"));
+
+//        log.info("请求地址：" + url + "请求参数：" + nvps.toString());
+
+        //设置header信息
+        //指定报文头【Content-type】、【User-Agent】
+        httpPost.setHeader("Content-type", "application/x-www-form-urlencoded");
+
+        //执行请求操作，并拿到结果（同步阻塞）
+        CloseableHttpResponse response = client.execute(httpPost);
+        //获取结果实体
+        HttpEntity entity = response.getEntity();
+        if (entity != null) {
+            //按指定编码转换结果实体为String类型
+            body = EntityUtils.toString(entity, "utf-8");
         }
-        return s2.toString();
+        EntityUtils.consume(entity);
+        //释放链接
+        response.close();
+//        log.info("返回结果:" + body);
+        return body;
     }
-
-
-    @Test
-    public void test() throws IOException, ParseException {
-        String secret_key = "9cc743e57a539296a587a50dedbd2ffb";
-        Map map = new HashMap();
-        //赋值
-        VhallCommonParam vhallCommonParam = new VhallCommonParam();
-        vhallCommonParam.app_key = "3607c5f95326a420faf2f85667479f73";
-        vhallCommonParam.sign_type = "0";
-        vhallCommonParam.signed_at = new Date().getTime()+"";
-        vhallCommonParam.third_user_id = "1233432456";
-        vhallCommonParam.pass = "123456";
-        map.put("app_key",vhallCommonParam.app_key);
-        map.put("sign_type",vhallCommonParam.sign_type);
-        map.put("signed_at",vhallCommonParam.signed_at);
-        map.put("third_user_id",vhallCommonParam.third_user_id);
-        map.put("pass",vhallCommonParam.pass);
-        String signStr =  getMd5SignStr(map);
-        System.out.println(secret_key +signStr  + secret_key);
-        map.put("sign", MD5Util.MD5(secret_key +signStr  + secret_key).toLowerCase());
-
-        String s = SimpleHttpClientUtil.send("https://saas-open.vhall.com/v3/users/open-user/create", map);
-        System.out.println(111);
-    }
+    
+    
+    
