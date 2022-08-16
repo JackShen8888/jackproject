@@ -1,58 +1,26 @@
-    public static String sendPost2(String url, Map<String, Object> map) {
-        log.info("请求url {},参数{}", url,JSON.toJSON(map));
-        StringBuffer body = new StringBuffer();
-        for (Map.Entry entry : map.entrySet()) {
-            //map的value不为空,才会拼接在url中
-            if (StringUtils.isNotBlank(entry.getValue().toString())) {
-                body.append(entry.getKey()).append("=").append(entry.getValue()).append("&");
-            }
-        }
-        //是否要默认加key?暂时没有加key
-        String param = body.toString().substring(0, body.toString().length() - 1);
-        return HttpUtil.createPost(url).body(param).charset("utf-8").execute().body();
-    }
- public  String getMd5SignStr(Map<String, Object> params) {
-
-        String[] sortedKeys = params.keySet().toArray(new String[]{}); //将key取出放数组
-        Arrays.sort(sortedKeys);// 排序请求参数
-        StringBuilder s2 = new StringBuilder();
-        for (String key : sortedKeys) {
-            s2.append(key).append(params.get(key));   //name123sssssdf
-        }
-        if (s2.toString().trim().length() == 0) {
-            return "";
-        }
-        return s2.toString();
-    }
-
-
-    @Test
-    public void test() throws IOException, ParseException {
-        String secret_key = "9cc743e57a539296a587a50dedbd2ffb";
-        Map map = new HashMap();
-        //赋值
-        VhallCommonParam vhallCommonParam = new VhallCommonParam();
-        vhallCommonParam.app_key = "3607c5f95326a420faf2f85667479f73";
-        vhallCommonParam.sign_type = "0";
-        //vhallCommonParam.signed_at = new Date().getTime() +"";
-        vhallCommonParam.signed_at = "1660399157015";
-        vhallCommonParam.third_user_id = "1233432456";
-        vhallCommonParam.pass = "123456";
-        map.put("app_key",vhallCommonParam.app_key);
-        map.put("sign_type",vhallCommonParam.sign_type);
-        map.put("signed_at",vhallCommonParam.signed_at);
-        map.put("third_user_id",vhallCommonParam.third_user_id);
-        map.put("pass",vhallCommonParam.pass);
-        String signStr =  getMd5SignStr(map);
-        System.out.println("我生成的sign:"+secret_key +signStr  + secret_key);
-        //System.out.println("文档里的sign:"+"user_secret_keyapp_keyuser_app_keysign_type0signed_at1641469560webinar_id123456user_secret_key");
-        System.out.println("我生成的sign的MD5:"+MD5Util.MD5(secret_key +signStr  + secret_key).toLowerCase());
-       // System.out.println("文档里的sign:"+"68e99b89f6bdc1d751dd8a6f15c609c8");
-        map.put("sign", MD5Util.MD5(secret_key +signStr  + secret_key).toLowerCase());
-
-        //String s = SimpleHttpClientUtil.send("https://saas-open.vhall.com/v3/users/open-user/create", map);
-        SimpleHttpClientUtil.sendPost2("https://saas-open.vhall.com/v3/users/open-user/create",map);
-        System.out.println(111);
-
-
-    }
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>easyexcel</artifactId>
+            <version>2.1.6</version>
+        </dependency>
+                response.setContentType("application/vnd.ms-excel");
+        response.setCharacterEncoding("utf-8");
+        response.setHeader("Content-disposition", "attachment;filename=" + new String("单据管理".getBytes(), "iso-8859-1") + ".xlsx");
+        switch (type){
+            case 1:
+                List<BillPurchaseExcel> excelData1 = new ArrayList<>();
+                for (BillVo pojo : list) {
+                    BillPurchaseExcel billManagerExcel = new BillPurchaseExcel();
+                    BeanUtils.copyProperties(pojo, billManagerExcel);
+                    billManagerExcel.setBillStatus(parseFieldStatus(type, pojo.getStatus()));
+                    billManagerExcel.setBillType(parseFieldType(pojo.getBillType(),pojo.getType(),pojo));
+                    excelData1.add(billManagerExcel);
+                }
+                ExcelWriter excelWriter = EasyExcel.write(response.getOutputStream())
+                        .head(BillPurchaseExcel.class)
+                        .registerWriteHandler(new EasyExcelCustemhandlerConfig())
+                        .registerWriteHandler(EasyExcelUtil.getStyleStrategy())
+                        .build();
+                WriteSheet writeSheet1 = EasyExcel.writerSheet(0, "sheet1").head(BillPurchaseExcel.class).build();
+                excelWriter.write(excelData1, writeSheet1);
+                excelWriter.finish();
