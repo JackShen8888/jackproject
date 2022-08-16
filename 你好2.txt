@@ -1,1 +1,29 @@
-12
+@Data
+@ExcelIgnoreUnannotated
+public class BillInvoiceExcel {
+
+    @ExcelProperty(value = "单据编码", index = 0)
+    private String billNo;
+
+    @ExcelProperty(value = "流水号", index = 1)
+    private String flowNo;
+
+    @ExcelProperty(value = "单据类型", index = 2)
+    private String billType;
+
+    @ExcelProperty(value = "单据状态", index = 3)
+    private String billStatus;
+
+    @ExcelProperty(value = "采购公司", index = 4)
+    private String purchaseCompanyName;
+
+    @ExcelProperty(value = "供应商", index = 5)
+    private String supplierName;
+
+    @ExcelProperty(value = "提单人员", index = 6)
+    private String submitPeopleName;
+
+    @ExcelProperty(value = "提单日期", index = 7)
+    private String submitTime;
+
+}
