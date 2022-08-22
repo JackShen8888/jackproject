@@ -1,0 +1,25 @@
+spring.application.name= ${APP_NAME:ft-purchase}
+spring.profiles.active = ${FTBSP_ENV:local}
+# nacos 服务器地址
+nacos.config.server-addr= ${NACOS_URL:192.168.0.114:8848}
+#允许nacos上的配置优先于本地配置
+nacos.config.remote-first=true
+#开启配置预加载功能
+nacos.config.bootstrap.enable=true
+# 主配置 配置文件类型
+nacos.config.type=yaml
+# 主配置 开启自动刷新
+nacos.config.auto-refresh=true
+#命名空间id
+nacos.config.namespace=${NACOS_NAMESPACE:local}
+# 启用远程配置
+nacos.config.enable-remote-sync-config=true
+# 默认分组
+nacos.config.group=DEFAULT_GROUP
+# dataid
+nacos.config.data-ids= ${spring.application.name}
+# 最大重试次数
+nacos.config.max-retry= 3
+
+# 公共配置
+nacos.extConfig[0].data-id= ${spring.application.name}
