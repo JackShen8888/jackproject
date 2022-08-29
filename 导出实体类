@@ -1,0 +1,16 @@
+
+@Data
+@ExcelIgnoreUnannotated
+public class FundAccountExportExcel {
+
+    /**
+     * 银行EAS编码
+     */
+    @ExcelProperty(value = "账户编码", index = 0)
+    private String billNo;
+
+    @ExcelProperty(value = "银行名称", index = 1)
+    private String bankName;
+
+    @ExcelProperty(value = "银行账号", index = 2)
+    private String bankAccount;
