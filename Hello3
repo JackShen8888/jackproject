@@ -1,0 +1,18 @@
+ public void exportTotalPurchase(ReportParam.PurchaseParam purchaseParam, HttpServletResponse response, SSOUser ssoUser) throws Exception {
+        purchaseParam.setPagesize("1000000");
+        PageResult<List> totalPurchases = this.totalPurchase(purchaseParam, ssoUser);
+        response.setContentType("application/vnd.ms-excel");
+        response.setCharacterEncoding("utf-8");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+        String fileName = "采购统计" + sdf.format(new Date());
+        response.setHeader("Content-disposition", "attachment;filename=" + new String(fileName.getBytes(), StandardCharsets.ISO_8859_1) + ".xlsx");
+
+        ExcelWriter excelWriter = EasyExcel.write(response.getOutputStream())
+                .head(ReportServiceDto.TotalPurchase.class)
+                .registerWriteHandler(new EasyExcelCustemhandlerConfig())
+                .registerWriteHandler(EasyExcelUtil.getStyleStrategy())
+                .build();
+        WriteSheet writeSheet1 = EasyExcel.writerSheet(0, "sheet1").head(ReportServiceDto.TotalPurchase.class).build();
+        excelWriter.write(totalPurchases.getList(), writeSheet1);
+        excelWriter.finish();
+    }
