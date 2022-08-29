@@ -40,3 +40,9 @@
             }
         }
     }
+        @ExcelProperty(value = "签收人1", index = 12)
+    private String signerOne;
+
+
+    @ExcelProperty(value = "签收人2", index = 13)
+    private String signerTwo;
