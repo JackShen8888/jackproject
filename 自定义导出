@@ -1,0 +1,42 @@
+  ClassPathResource classPathResource = new ClassPathResource("fundAccountTemplate.xlsx");
+        InputStream inputStream = classPathResource.getInputStream();
+        XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
+
+        getFundAccountExcelsPage(fundAccountExportExcels, workbook);//渲染第一页sheet
+
+        String fileName = "资金账户清单列表" + LocalDateTime.now().format(DateTimeFormatter.ofPattern(CommonConstant.DAY_STR_2)) + ".xlsx";
+        response.setContentType("application/vnd.ms-excel");
+        response.setHeader("Content-disposition", "attachment;filename=" + java.net.URLEncoder.encode(fileName, "UTF-8"));
+        OutputStream output = response.getOutputStream();
+        BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(output);
+        bufferedOutputStream.flush();
+        workbook.write(bufferedOutputStream);
+        bufferedOutputStream.close();
+        workbook.close();
+        output.close();
+         private void getFundAccountExcelsPage(List<FundAccountExportExcel> fundAccountExportExcels, XSSFWorkbook workbook) {
+        XSSFSheet sheet = workbook.getSheetAt(0);
+        if (sheet != null) {
+            if (CollectionUtils.isNotEmpty(fundAccountExportExcels)) {
+                for (int i = 0; i < fundAccountExportExcels.size(); i++) {
+                    XSSFRow row = sheet.createRow(i + 2);
+                    row.createCell(0).setCellValue(fundAccountExportExcels.get(i).getBillNo());
+                    row.createCell(1).setCellValue(fundAccountExportExcels.get(i).getBankName());
+                    row.createCell(2).setCellValue(fundAccountExportExcels.get(i).getBankAccount());
+                    row.createCell(3).setCellValue(fundAccountExportExcels.get(i).getCurrencyNm());
+                    row.createCell(4).setCellValue(fundAccountExportExcels.get(i).getAccountTypeNm());
+                    row.createCell(5).setCellValue(fundAccountExportExcels.get(i).getAccountUsage());
+                    row.createCell(6).setCellValue(fundAccountExportExcels.get(i).getRegisterTime());
+                    row.createCell(7).setCellValue(fundAccountExportExcels.get(i).getCancelTime());
+                    row.createCell(8).setCellValue(fundAccountExportExcels.get(i).getPeriod());
+                    row.createCell(9).setCellValue(fundAccountExportExcels.get(i).getExpireTime());
+                    row.createCell(10).setCellValue(fundAccountExportExcels.get(i).getBankBillForm());
+                    row.createCell(11).setCellValue(fundAccountExportExcels.get(i).getBankEndAmount());
+                    row.createCell(12).setCellValue(fundAccountExportExcels.get(i).getSignerOne());
+                    row.createCell(13).setCellValue(fundAccountExportExcels.get(i).getSignerTwo());
+                    row.createCell(14).setCellValue(fundAccountExportExcels.get(i).getBankingLoginCheck());
+                    row.createCell(15).setCellValue(fundAccountExportExcels.get(i).getIsFact());
+                }
+            }
+        }
+    }
