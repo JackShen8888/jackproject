@@ -1,0 +1,60 @@
+/**
+    * 装载
+    * @param packable
+    */
+   public void pack(Packable packable){
+      if(this instanceof Storage){
+         Storage storage1 = (Storage)this;
+         if(storage1.getWidth()<0){
+            throw new IllegalArgumentException();
+         }
+         if(storage1.getHeight()<0){
+            throw new IllegalArgumentException();
+         }
+         if(storage1.getLength()<0){
+            throw new IllegalArgumentException();
+         }
+      }
+      if(this instanceof Storage){
+         Storage storage2 = (Storage)this;
+
+         if(packable.width> storage2.getWidth()){
+            throw new PackingException();
+         }
+         if(packable.height > storage2.getHeight()){
+            throw new PackingException();
+         }
+         if(packable.length > storage2.getLength()){
+            throw new PackingException();
+         }
+      }
+      this.pageableList.add(packable);
+   }
+
+   /**
+    * 卸载
+    * @return
+    */
+   public Packable unpack(){
+     return this.pageableList.remove(0);
+   }
+
+   public List getElements() {
+      return this.pageableList;
+   }
+
+   public List<Packable> getElementsOfType(Packable packable) {
+      List<Packable> res = new ArrayList<>();
+      for(Packable packable1 : pageableList){
+         if(packable1 == packable){
+            res.add(packable);
+         }
+      }
+      return res;
+   }
+
+   public int getOccupiedCapacity() {
+      return this.pageableList.size();
+   }
+
+}
